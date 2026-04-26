@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  passwordHash     String
+  name             String
+  businessName     String?
+  businessCategory String?
+  phone            String?
+  avatar           String?
+  isVerified       Boolean   @default(false)
+  isActive         Boolean   @default(true)
+  plan             PlanType  @default(FREE)
+  planExpiresAt    DateTime?
+  
+  refreshTokens    RefreshToken[]
+  dataUploads      DataUpload[]
+  orders           Order[]
+  products         Product[]
+  competitors      Competitor[]
+  aiInsights       AIInsight[]
+  healthScores     HealthScore[]
+  payments         Payment[]
+  notifications    Notification[]
+  invoices         Invoice[]
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+enum PlanType {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model DataUpload {
+  id        String   @id @default(uuid())
+  userId    String
+  filename  String
+  platform  String   // e.g., 'shopify', 'amazon', 'csv'
+  rowCount  Int      @default(0)
+  status    String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id           String   @id @default(uuid())
+  userId       String
+  uploadId     String?
+  orderId      String
+  product      String
+  qty          Int
+  salePrice    Float
+  costPrice    Float    @default(0)
+  platformFee  Float    @default(0)
+  shipping     Float    @default(0)
+  gst          Float    @default(0)
+  realProfit   Float    @default(0)
+  returnStatus String   @default("DELIVERED") // DELIVERED, RETURNED, RTO
+  orderDate    DateTime
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id               String   @id @default(uuid())
+  userId           String
+  name             String
+  sku              String
+  currentStock     Int      @default(0)
+  reorderThreshold Int      @default(10)
+  costPrice        Float    @default(0)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([userId, sku])
+}
+
+model Competitor {
+  id            String   @id @default(uuid())
+  userId        String
+  productId     String   // The user's product this maps to
+  url           String
+  platform      String   // 'amazon', 'flipkart'
+  lastPrice     Float?
+  lastRating    Float?
+  lastScrapedAt DateTime?
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AIInsight {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // PRICING, MARKETING, GENERAL, INVENTORY
+  content   String   @db.Text
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model HealthScore {
+  id        String   @id @default(uuid())
+  userId    String
+  total     Int
+  profit    Int
+  marketing Int
+  pricing   Int
+  inventory Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  userId          String
+  razorpayOrderId String   @unique
+  amount          Float
+  plan            PlanType
+  status          String   @default("CREATED") // CREATED, SUCCESS, FAILED
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // INFO, WARNING, SUCCESS, ERROR
+  message   String
+  isRead    Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Invoice {
+  id              String   @id @default(uuid())
+  userId          String
+  invoiceNumber   String?
+  customerName    String?
+  items           Json     // Array of { product, qty, price }
+  totalAmount     Float
+  gstAmount       Float    @default(0)
+  date            DateTime @default(now())
+  source          String   @default("Manual") // 'Scanned Bill', 'Manual'
+  imageUrl        String?  // the uploaded bill image 
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
