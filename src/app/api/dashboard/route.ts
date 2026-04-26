@@ -4,7 +4,7 @@ import { fetchLiveDashboardMetrics } from '@/lib/supabase';
 export async function GET() {
   const dbResult = await fetchLiveDashboardMetrics();
 
-  const rawRevenue = dbResult.success ? dbResult.data?.revenue || 284500 : 284500;
+  const rawRevenue = dbResult.success ? (dbResult.data as any)?.revenue || 284500 : 284500;
   
   const platformFee = rawRevenue * 0.02; // 2%
   const shippingTotal = 1847 * 60; // ₹60 per order

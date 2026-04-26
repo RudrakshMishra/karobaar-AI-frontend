@@ -66,7 +66,7 @@ export function Navbar() {
         ) : (
           <>
             <Link href="/dashboard" className="hidden sm:block text-white text-[14px] font-medium hover:text-white/70 transition-colors mr-2">Dashboard</Link>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
           </>
         )}
 

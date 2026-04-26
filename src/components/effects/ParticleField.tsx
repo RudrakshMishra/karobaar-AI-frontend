@@ -41,7 +41,7 @@ export default function ParticleField() {
             },
             opacity: {
               value: 0.5,
-              animation: { enable: true, speed: 0.5, minimumValue: 0.1 }
+              animation: { enable: true, speed: 0.5 }
             },
             shape: { type: "circle" },
             size: { value: { min: 1, max: 2 } },

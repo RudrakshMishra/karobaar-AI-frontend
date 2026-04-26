@@ -1,12 +1,9 @@
 "use client";
 
-import { ReactLenis } from "@studio-freight/react-lenis";
 import { ReactNode } from "react";
 
+// SmoothScroll: uses CSS scroll-behavior for native smooth scrolling
+// Replaced @studio-freight/react-lenis due to React 19 type incompatibility
 export default function SmoothScroll({ children }: { children: ReactNode }) {
-  return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
-      {children}
-    </ReactLenis>
-  );
+  return <>{children}</>;
 }

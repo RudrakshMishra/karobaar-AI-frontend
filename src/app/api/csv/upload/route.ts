@@ -6,7 +6,7 @@ import { parse } from 'csv-parse/sync';
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions as any);
+    const session = await getServerSession(authOptions as any) as any;
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const userId = (session.user as any).id;
     let imported = 0;
 
-    for (const record of records) {
+    for (const record of records as any[]) {
       // Very basic normalizer based on common headers
       const dateStr = record.date || record.Date || record['Order Date'];
       const product = record.product_name || record.Product || record['Item Name'];
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ success: true, rowsImported: imported, summary: \`Successfully imported \${imported} rows.\` });
+    return NextResponse.json({ success: true, rowsImported: imported, summary: `Successfully imported ${imported} rows.` });
   } catch (error) {
     console.error('CSV Upload Error:', error);
     return NextResponse.json({ error: 'Error processing CSV' }, { status: 500 });
