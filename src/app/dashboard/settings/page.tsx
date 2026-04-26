@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Settings, User, Bell, Shield, KeyRound, MonitorSmartphone, CreditCard, Users, CheckCircle2, AlertTriangle, Upload } from "lucide-react";
+import { useAuthStore } from "../../../store/authStore";
+import api from "../../../lib/api";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("Profile");
@@ -58,36 +60,47 @@ export default function SettingsPage() {
 function ProfileTab() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const { user, fetchProfile } = useAuthStore() as any;
+
   const [profileData, setProfileData] = useState({
-    fullName: "Sanjay Mehta",
-    email: "sanjay@premiumstore.in",
-    storeName: "Premium Store IN",
+    fullName: "",
+    email: "",
+    storeName: "Karobaar Demo",
     timezone: "Asia/Kolkata (IST)"
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("karobaar_profile");
-    if (saved) {
-      setProfileData(JSON.parse(saved));
+    if (user) {
+      setProfileData({
+        fullName: user.full_name || "",
+        email: user.email || "",
+        storeName: "Karobaar Demo",
+        timezone: "Asia/Kolkata (IST)"
+      });
+    } else {
+      fetchProfile();
     }
-  }, []);
+  }, [user, fetchProfile]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    // Simulate network request
-    setTimeout(() => {
-      localStorage.setItem("karobaar_profile", JSON.stringify(profileData));
-      setIsSaving(false);
+    try {
+      await api.put('/api/user/profile', { full_name: profileData.fullName });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
-    }, 800);
+      fetchProfile();
+    } catch (error) {
+      console.error("Failed to save profile", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleChange = (key: string, value: string) => {
     setProfileData(prev => ({ ...prev, [key]: value }));
   };
 
-  const initial = profileData.fullName ? profileData.fullName.charAt(0).toUpperCase() : "S";
+  const initial = profileData.fullName ? profileData.fullName.charAt(0).toUpperCase() : "U";
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -112,7 +125,7 @@ function ProfileTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InputGroup label="Full Name" placeholder="e.g. Rahul Sharma" value={profileData.fullName} onChange={(v) => handleChange("fullName", v)} />
-        <InputGroup label="Email Address" placeholder="you@company.com" value={profileData.email} onChange={(v) => handleChange("email", v)} />
+        <InputGroup label="Email Address" placeholder="you@company.com" value={profileData.email} onChange={() => {}} />
         <InputGroup label="Store Name" placeholder="Your brand name" value={profileData.storeName} onChange={(v) => handleChange("storeName", v)} />
         <InputGroup label="Timezone" placeholder="IST" value={profileData.timezone} onChange={(v) => handleChange("timezone", v)} />
       </div>

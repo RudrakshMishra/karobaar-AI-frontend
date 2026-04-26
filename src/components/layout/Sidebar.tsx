@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Package, Calculator, BrainCircuit, Target, BookOpen, Settings, LogOut, Camera, FileText } from "lucide-react";
+import { Home, BarChart3, Package, Calculator, BrainCircuit, Target, BookOpen, Settings, LogOut, Camera, FileText } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
 const navItems = [
-  { name: "Overview", pathname: "/dashboard/overview", icon: BarChart3 },
+  { name: "Home", pathname: "/", icon: Home },
+  { name: "Overview", pathname: "/dashboard", icon: BarChart3 },
   { name: "Products", pathname: "/dashboard/products", icon: Package },
   { name: "Profit Engine", pathname: "/dashboard/profit", icon: Calculator },
   { name: "AI Insights", pathname: "/dashboard/insights", icon: BrainCircuit },

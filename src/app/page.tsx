@@ -17,6 +17,8 @@ import { AreaChart, Area, ResponsiveContainer, XAxis, Tooltip } from 'recharts';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import StarField from '@/components/effects/StarField';
+import ShutterHero from '@/components/hero/ShutterHero';
+import { SignUpButton, useAuth } from "@clerk/nextjs";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -24,6 +26,7 @@ import VideoPlayer from '@/components/ui/VideoPlayer';
 
 export default function LandingPage() {
   const containerRef = useRef(null);
+  const { isSignedIn } = useAuth();
   
   const mockDashboardData = [
     { name: 'Mon', revenue: 4000 },
@@ -141,69 +144,8 @@ export default function LandingPage() {
     <main ref={containerRef} className="bg-[#050505] min-h-screen text-white font-sans selection:bg-white/20 selection:text-white">
       <Navbar />
       
-      {/* SECTION 1: HERO (WEEB3 STYLE / FULLSCREEN VIDEO) */}
-      <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Background Video */}
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260217_030345_246c0224-10a4-422c-b324-070b7c0eceda.mp4" type="video/mp4" />
-        </video>
-
-        {/* Content Container */}
-        <motion.div 
-          className="relative z-10 text-center max-w-5xl mx-auto flex flex-col items-center pt-[200px] md:pt-[280px] pb-[102px] px-6"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {/* Badge Pill */}
-          <motion.div 
-            variants={itemVariants}
-            className="flex items-center gap-3 px-8 py-3 bg-[#1A1A1A]/10 border border-black/20 rounded-full mb-10"
-          >
-            <div className="w-2 h-2 bg-[#1A1A1A] rounded-full shadow-[0_0_12px_white]" />
-            <span className="text-[18px] font-medium tracking-wide">
-              <span className="text-white">AI Intelligence Platform</span>
-            </span>
-          </motion.div>
-
-          <motion.h1 
-            variants={itemVariants}
-            className="text-[48px] md:text-[88px] font-medium leading-[1.1] tracking-tight max-w-4xl mb-6"
-            style={{
-              background: 'linear-gradient(144.5deg, #FFFFFF 32%, rgba(255,255,255, 0.4) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            Karobaar AI
-          </motion.h1>
-
-          {/* Subtitle */}
-          <motion.p 
-            variants={itemVariants}
-            className="text-[15px] font-normal text-white/70 max-w-[680px] leading-relaxed mb-10"
-          >
-            Powering seamless selling and real-time insights, Karobaar AI is the base for entrepreneurs who move with purpose, leveraging resilience, speed, and scale to shape the future of Indian commerce.
-          </motion.p>
-
-          {/* CTA Button (Layered Pill) */}
-          <motion.div variants={itemVariants}>
-            <div className="relative group cursor-pointer">
-                 <div className="bg-[#1A1A1A] rounded-full px-[29px] py-[11px] relative overflow-hidden group-hover:bg-[#333333] transition-colors shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/10">
-                    {/* Glow Streak */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent blur-[1px] opacity-50" />
-                    <span className="text-white text-[14px] font-medium relative z-10">Join Waitlist</span>
-                 </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </section>
+      {/* SECTION 1: HERO (CINEMATIC SHUTTER & 3D TILT) */}
+      <ShutterHero />
 
       
       {/* --- DARK INVERSION GROUP --- */}
@@ -537,7 +479,7 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 8: FINAL CTA */}
-      <section className="relative py-60 px-6 overflow-hidden flex flex-col items-center justify-center text-center">
+      <section id="get-started" className="relative py-60 px-6 overflow-hidden flex flex-col items-center justify-center text-center">
          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.05),transparent_70%)] animate-slow-pulse" />
          
          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
@@ -548,7 +490,13 @@ export default function LandingPage() {
             </p>
             
             <div className="reveal flex flex-col sm:flex-row items-center gap-4 mb-20">
-              <Link href="/signup" className="btn-primary">Get Started Now</Link>
+              {!isSignedIn ? (
+                <SignUpButton mode="modal">
+                  <button className="btn-primary">Get Started Now</button>
+                </SignUpButton>
+              ) : (
+                <Link href="/dashboard" className="btn-primary">Go to Dashboard</Link>
+              )}
               <button className="btn-secondary">Book a Call</button>
             </div>
 

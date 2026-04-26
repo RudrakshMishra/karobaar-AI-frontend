@@ -51,7 +51,7 @@ export default function TopNav() {
 
   return (
     <>
-      <div className="h-[60px] bg-[#F2F0EA] border-b border-[#D6D3CB] flex items-center justify-between px-8 sticky top-0 z-40 md:ml-[240px]">
+      <div className="h-[60px] bg-[#F2F0EA] border-b border-[#D6D3CB] flex items-center justify-between px-8 sticky top-0 z-40">
         {/* Left */}
         <div>
           <h2 className="text-[#050505] text-lg font-semibold capitalize">{pageTitle}</h2>

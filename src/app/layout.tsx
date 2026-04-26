@@ -29,8 +29,10 @@ export const metadata: Metadata = {
   description: "Experience absolute performance.",
 };
 
+import { ClerkProvider } from '@clerk/nextjs'
 import SmoothScroll from "@/components/ui/SmoothScroll";
 import CustomCursor from "@/components/ui/CustomCursor";
+import TokenProvider from "@/components/providers/TokenProvider";
 
 export default function RootLayout({
   children,
@@ -38,15 +40,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="hide-scrollbar">
-      <head>
-      </head>
-      <body className={`min-h-screen flex flex-col relative bg-[#FAF9F6] text-[#050505] selection:bg-[#1A1A1A] selection:text-[#050505] antialiased ${inter.variable} ${archivo.variable} ${spaceMono.variable} ${jakarta.variable} font-sans`}>
-        <SmoothScroll>
-          <CustomCursor />
-          {children}
-        </SmoothScroll>
-      </body>
-    </html>
+    <ClerkProvider>
+      <TokenProvider />
+      <html lang="en" suppressHydrationWarning className="hide-scrollbar">
+        <head>
+        </head>
+        <body className={`min-h-screen flex flex-col relative bg-[#FAF9F6] text-[#050505] selection:bg-[#1A1A1A] selection:text-[#050505] antialiased ${inter.variable} ${archivo.variable} ${spaceMono.variable} ${jakarta.variable} font-sans`}>
+          <SmoothScroll>
+            <CustomCursor />
+            {children}
+          </SmoothScroll>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

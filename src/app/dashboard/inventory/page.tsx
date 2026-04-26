@@ -2,8 +2,24 @@
 
 import { BookOpen, AlertCircle, CheckCircle2, TrendingDown } from "lucide-react";
 
+import { useProductsStore } from "../../../store/productsStore";
+import { useEffect } from "react";
+
 export default function InventoryPage() {
-  const inventoryItems = [
+  const { products, fetchProducts } = useProductsStore();
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const inventoryItems = products.length > 0 ? products.map(p => ({
+    sku: p.id,
+    name: p.name,
+    stock: p.current_stock || 0,
+    velocity: Math.floor(Math.random() * 10) + 1, // Mock velocity
+    status: p.current_stock === 0 ? "Stock Out" : p.current_stock < 20 ? "Critical" : p.current_stock > 300 ? "Overstocked" : "Healthy",
+    daysLeft: p.current_stock > 0 ? Math.floor(p.current_stock / (Math.floor(Math.random() * 10) + 1)) : 0
+  })) : [
     { sku: "SKU-001", name: "Noise Cancelling Earbuds PRO", stock: 450, velocity: 12, status: "Healthy", daysLeft: 37 },
     { sku: "SKU-003", name: "Ergonomic Office Chair X1", stock: 15, velocity: 4, status: "Critical", daysLeft: 3 },
     { sku: "SKU-006", name: "Gaming Mouse 10k DPI", stock: 0, velocity: 0, status: "Stock Out", daysLeft: 0 },
